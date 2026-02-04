@@ -1,14 +1,13 @@
-import { readFileSync } from "fs";
-import { join, dirname } from "path";
 import { config } from "dotenv";
 
 config();
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const DESTINATION_EMAIL = process.env.DESTINATION_EMAIL;
 const SENDER_EMAIL = process.env.SENDER_EMAIL;
+const GITHUB_TEMPLATE_URL = process.env.GITHUB_TEMPLATE_URL;
 
 
-async function sendEmail(
+export async function sendEmail(
   subject: string,
   htmlContent: string,
 ) {
@@ -29,13 +28,19 @@ async function sendEmail(
   return response.json();
 }
 
-function loadTemplate(templateName: string): string {
-  const templatePath = join(dirname(import.meta.path), "..", "template", templateName);
-  return readFileSync(templatePath, "utf-8");
+async function loadTemplate(templateName: string): Promise<string> {
+  const templateUrl = `${GITHUB_TEMPLATE_URL}/${templateName}`;
+  const response = await fetch(templateUrl);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch template: ${response.statusText}`);
+  }
+
+  return response.text();
 }
 
-async function notifyError(jobName: string, error: Error): Promise<void> {
-  const template = loadTemplate("email_error.html");
+export async function notifyError(jobName: string, error: Error): Promise<void> {
+  const template = await loadTemplate("email_error.html");
   const timestamp = new Date()
     .toLocaleString("pt-BR", {
       day: "2-digit",
@@ -57,8 +62,8 @@ async function notifyError(jobName: string, error: Error): Promise<void> {
   await sendEmail(`🚨 ${jobName} - Falhou`, html);
 }
 
-async function notifySuccess(jobName: string): Promise<void> {
-  const template = loadTemplate("email_success.html");
+export async function notifySuccess(jobName: string): Promise<void> {
+  const template = await loadTemplate("email_success.html");
   const timestamp = new Date()
     .toLocaleString("pt-BR", {
       day: "2-digit",
@@ -79,7 +84,7 @@ async function notifySuccess(jobName: string): Promise<void> {
 
 async function main() {
   try {
-    const a = 1 / 0;
+    throw new Error("Erro proposital para testar notificação");
     await notifySuccess("Job Mensal Das");
   } catch (error) {
     await notifyError("Job Mensal Das", error as Error);

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "template-email-ts",
+      "name": "email-ts",
       "dependencies": {
         "dotenv": "^17.2.3",
       },

@@ -1,5 +1,5 @@
 {
-  "name": "template-email-ts",
+  "name": "email-ts",
   "module": "index.ts",
   "type": "module",
   "private": true,

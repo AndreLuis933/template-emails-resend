@@ -1,4 +1,4 @@
-# template-email-ts
+# email-ts
 
 To install dependencies:
 
