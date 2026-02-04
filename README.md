@@ -10,6 +10,7 @@ This is a reusable email notification template for job monitoring using the [Res
 - 🔄 Templates fetched from GitHub (always up-to-date)
 - 🐍 Python implementation
 - 📘 TypeScript implementation (Bun runtime)
+- 🔵 Go implementation
 
 ## Quick Start
 
@@ -27,6 +28,14 @@ cp email-py/notification.py your-project/
 ```bash
 # Copy the index file
 cp email-ts/index.ts your-project/
+```
+
+**Go:**
+```bash
+# Copy the notification module
+cp email-go/notification.go your-project/
+cp email-go/go.mod your-project/
+cp email-go/go.sum your-project/
 ```
 
 ### 2. Set Up Environment Variables
@@ -50,6 +59,11 @@ pip install requests python-dotenv
 **TypeScript (Bun):**
 ```bash
 bun add dotenv
+```
+
+**Go:**
+```bash
+go mod download
 ```
 
 ### 4. Usage
@@ -76,6 +90,31 @@ try {
 } catch (error) {
     await notifyError("My Job Name", error as Error);
     throw error;
+}
+```
+
+**Go:**
+```go
+package main
+
+import (
+    "fmt"
+    "log"
+)
+
+func main() {
+    // Your job code here
+    err := someFunction()
+    if err != nil {
+        if notifyErr := NotifyError("My Job Name", err); notifyErr != nil {
+            log.Printf("Failed to send error notification: %v", notifyErr)
+        }
+        panic(err)
+    }
+
+    if err := NotifySuccess("My Job Name"); err != nil {
+        log.Printf("Failed to send success notification: %v", err)
+    }
 }
 ```
 
@@ -119,8 +158,12 @@ The templates use simple string replacement. You can add custom placeholders by:
 .
 ├── email-py/              # Python implementation
 │   └── notification.py    # Main notification module
-├── email-ts/     # TypeScript implementation
+├── email-ts/              # TypeScript implementation
 │   └── index.ts          # Main notification module (Bun)
+├── email-go/              # Go implementation
+│   ├── notification.go   # Main notification module
+│   ├── go.mod           # Go module file
+│   └── go.sum           # Go dependencies
 ├── template/             # Email HTML templates
 │   ├── email_error.html  # Error notification template
 │   └── email_success.html # Success notification template
